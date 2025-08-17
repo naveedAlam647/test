@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Quiz</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f4f4f9; color: #333; }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #007BFF;
+      font-size: 20px;
+    }
+    #question { font-size: 18px; margin-bottom: 15px; }
+    .options { list-style: none; margin-bottom: 20px; }
+    .options li {
+      margin-bottom: 10px;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      transition: all 0.3s ease;
+    }
+    .options li:hover { background: #e9ecef; }
+    #next-btn {
+      background: linear-gradient(45deg, #007BFF, #8E44AD);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      display: none;
+    }
+    #next-btn:hover {
+      background: linear-gradient(45deg, #8E44AD, #007BFF);
+      transform: translateY(-2px);
+      box-shadow: 0px 6px 12px rgba(0,0,0,0.3);
+    } 
+    #score { font-size: 16px; margin-bottom: 15px; font-weight: bold; text-align: center; }
+    #start-section { text-align: center; }
+    #start-section input {
+      padding: 10px;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    #start-btn {
+      background: #28a745;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #start-btn:hover { background: #218838; }
+    @media (max-width: 600px) { 
+      .container { margin: 20px; padding: 15px; }
+      #question { font-size: 16px; } 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>THE OCEAN OF KNOWLEDGE COACHING and COMPUTER ACADEMY</h1>
+    
+    <!-- Start Section -->
+    <div id="start-section">
+      <input type="text" id="student-name" placeholder="Enter your name">
+      <br>
+      <button id="start-btn">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Section -->
+    <div id="quiz-section" style="display:none;">
+      <div id="score">Score: 0</div>
+      <div id="question"></div>
+      <ul class="options" id="options"></ul>
+      <button id="next-btn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "HTML stands for?", options: ["Hyper Text Markup Language", "HighText Machine Language", "Hyperlinks and Text Markup Language", "None"], answer: 0 },
+      { question: "Which tag is used for inserting an image?", options: ["<img>", "<image>", "<src>", "<picture>"], answer: 0 },
+      { question: "Which tag is used for the largest heading?", options: ["<h6>", "<h1>", "<head>", "<header>"], answer: 1 },
+      { question: "Which attribute specifies a link destination?", options: ["href", "src", "link", "url"], answer: 0 },
+      { question: "Which tag is used to make text bold?", options: ["<b>", "<strong>", "Both A and B", "<bold>"], answer: 2 },
+      { question: "Which is correct for line break?", options: ["<break>", "<lb>", "<br>", "<line>"], answer: 2 },
+      { question: "HTML documents are saved with which extension?", options: [".html", ".doc", ".txt", ".ht"], answer: 0 },
+      { question: "Which tag is used to create a hyperlink?", options: ["<a>", "<link>", "<href>", "<hyper>"], answer: 0 },
+      { question: "which one is correct tag?", options: ["<html><html>", "<html></html>>", "</html></html>", "<none>"], answer: 1 },
+      { question: "Which tag is used for ordered lists?", options: ["<ul>", "<ol>", "<list>", "<order>"], answer: 1 }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let studentName = "";
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const scoreEl = document.getElementById("score");
+    const nextBtn = document.getElementById("next-btn");
+    const startBtn = document.getElementById("start-btn");
+    const startSection = document.getElementById("start-section");
+    const quizSection = document.getElementById("quiz-section");
+
+    startBtn.onclick = () => {
+      const nameInput = document.getElementById("student-name").value.trim();
+      if(nameInput === ""){
+        alert("Please enter your name before starting!");
+        return;
+      }
+      studentName = nameInput;
+      startSection.style.display = "none";
+      quizSection.style.display = "block";
+      loadQuestion();
+    };
+
+    function loadQuestion() {
+      let q = questions[currentQuestion];
+      questionEl.textContent = (currentQuestion + 1) + ". " + q.question;
+      optionsEl.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        let li = document.createElement("li");
+        li.textContent = opt;
+        li.onclick = () => selectOption(i);
+        optionsEl.appendChild(li);
+      });
+      nextBtn.style.display = "none";
+    }
+
+    function selectOption(i) {
+      let correct = questions[currentQuestion].answer;
+      let selectedOption = questions[currentQuestion].options[i];
+      let isCorrect = (i === correct);
+
+      let options = document.querySelectorAll(".options li");
+      options.forEach((li, index) => {
+        if(index === correct) li.style.background = "#d4edda";
+        if(index === i && index !== correct) li.style.background = "#f8d7da";
+        li.style.pointerEvents = "none";
+      });
+
+      if(isCorrect) score++;
+      scoreEl.textContent = "Score: " + score;
+      nextBtn.style.display = "block";
+
+      // send data to Google Sheet
+      sendToGoogleSheet(studentName, questions[currentQuestion].question, selectedOption, isCorrect, score);
+    }
+
+    nextBtn.onclick = () => {
+      currentQuestion++;
+      if(currentQuestion < questions.length){
+        loadQuestion();
+      } else {
+        questionEl.textContent = "Quiz Completed! Final Score: " + score + "/" + questions.length;
+        optionsEl.innerHTML = "";
+        nextBtn.style.display = "none";
+      }
+    }
+
+    // ✅ Google Sheets Integration
+    function sendToGoogleSheet(name, question, selected, correct, score) {
+      fetch("https://script.google.com/macros/s/AKfycbwejVACBQy2G2wPjK4xmHHOYDFqvmE5-Jpk5QHVd4CQOnP_98hAelWhbQvs0ATs2wnT/exec", {
+        method: "POST",
+        body: JSON.stringify({
+          name: name,
+          question: question,
+          selected: selected,
+          correct: correct,
+          score: score
+        })
+      })
+      .then(res => res.text())
+      .then(msg => console.log("Google Sheet Response:", msg))
+      .catch(err => console.error("Error:", err));
+    }
+  </script>
+</body>
+</html>
